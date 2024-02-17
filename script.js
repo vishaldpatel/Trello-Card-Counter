@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Trello List Counts
 // @namespace    https://trello.com/
-// @version      2024-02-17
+// @version      1.1
 // @description  Add list counts to trello lists.
 // @author       Vishal Patel
 // @match        https://trello.com/*
