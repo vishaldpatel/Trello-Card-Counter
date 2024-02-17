@@ -4,11 +4,14 @@
 // @version      2024-02-17
 // @description  Add list counts to trello lists.
 // @author       Vishal Patel
-// @match        https://trello.com/b/*
+// @match        https://trello.com/*
 // ==/UserScript==
 
 (function() {
     'use strict';
+
+    let TRELLO_URLS_REGEX = /^https:\/\/trello\.com\/b\/.*/;
+    let observer = null;
 
     function updateCounts() {
         document.querySelectorAll('[data-testid="list"]').forEach((t_list) => {
@@ -19,15 +22,13 @@
         });
     }
 
-    function observeLists() {
-        let observer = new MutationObserver(mutations => {
+    function startObserver() {
+        observer = new MutationObserver(mutations => {
             for(let mutation of mutations) {
                 // examine new nodes, is there anything to highlight?
 
-                for(let node of mutation.addedNodes) {
-                    // we track only elements, skip other nodes (e.g. text nodes)
-                    if (!(node instanceof HTMLElement)) continue;
-                    updateCounts()
+                if (mutation.target.nodeName === 'OL' && mutation.target.attributes[1].value === 'list-cards') {
+                    updateCounts();
                 }
             }
         });
@@ -37,9 +38,43 @@
         });
     }
 
+    function observeLists() {
+        // We only want to observe lists if we are in a Trello board
+        const regex = new RegExp(TRELLO_URLS_REGEX);
+
+        if (regex.test(window.location.href)) {
+            if (observer !== null) {
+                observer.disconnect();
+                observer = null;
+                setTimeout(() => {
+                    updateCounts();
+                    startObserver();
+                }, 1500);
+            } else {
+                updateCounts();
+                startObserver();
+            }
+
+        } else if (observer != null) {
+            observer.disconnect();
+            observer = null;
+        }
+    }
+
+    function observeURL() {
+        const regex = new RegExp(TRELLO_URLS_REGEX);
+        window.addEventListener('pushstate', function () {
+            observeLists();
+        });
+        window.addEventListener('popstate', function () {
+            alert('pop');
+            observeLists();
+        });
+    }
+
     window.onload = () => {
-        updateCounts();
-        observeLists();
+        observeLists(); // First init.
+        observeURL(); // If the user moves between boards.
     }
 
 })();
