@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Trello List Counts
 // @namespace    https://trello.com/
-// @version      1.1
+// @version      2024-02-17
 // @description  Add list counts to trello lists.
 // @author       Vishal Patel
 // @match        https://trello.com/b/*
@@ -14,7 +14,8 @@
         document.querySelectorAll('[data-testid="list"]').forEach((t_list) => {
             let list_count = t_list.querySelectorAll('li').length;
             let list_name = t_list.querySelector('[data-testid="list-name"]').nextSibling.value;
-            t_list.querySelector('h2').innerText = list_name+" ("+list_count+")";
+            let count_span = '<span style="display: inline-block; position: absolute; right: 0px; padding-left: 5px; padding-right: 5px; background: rgb(120 120 120 / 50%); border-radius: 5px">'+list_count+'</span>';
+            t_list.querySelector('h2').innerHTML = list_name+count_span;
         });
     }
 
