@@ -25,8 +25,6 @@
     function startObserver() {
         observer = new MutationObserver(mutations => {
             for(let mutation of mutations) {
-                // examine new nodes, is there anything to highlight?
-
                 if (mutation.target.nodeName === 'OL' && mutation.target.attributes[1].value === 'list-cards') {
                     updateCounts();
                 }
@@ -36,6 +34,8 @@
         document.querySelectorAll('[data-testid="list"]').forEach((t_list) => {
             observer.observe(t_list, {childList: true, subtree: true});
         });
+
+        updateCounts();
     }
 
     function observeLists() {
@@ -46,14 +46,10 @@
             if (observer !== null) {
                 observer.disconnect();
                 observer = null;
-                setTimeout(() => {
-                    updateCounts();
-                    startObserver();
-                }, 1500);
-            } else {
-                updateCounts();
-                startObserver();
             }
+            setTimeout(() => {
+                startObserver();
+            }, 1000);
 
         } else if (observer != null) {
             observer.disconnect();
@@ -66,8 +62,10 @@
         window.addEventListener('pushstate', function () {
             observeLists();
         });
+
+        // Popstate is never executed in Chrome, but
+        // just in case it executes in other browsers:
         window.addEventListener('popstate', function () {
-            alert('pop');
             observeLists();
         });
     }
