@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Trello List Counts
+// @name         Trello Card Counter
 // @namespace    https://trello.com/
 // @version      1.1
-// @description  Add list counts to trello lists.
+// @description  Show number of cards in a list next to the list's name.
 // @author       Vishal Patel
 // @match        https://trello.com/*
 // ==/UserScript==
